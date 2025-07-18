@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_UseScope" Id="{339530d4-aa4d-486a-a008-174b3f2b263e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_UseScope
+VAR_INPUT
+    bExternalTriggerEvent			: BOOL := FALSE;
+	nState							: UDINT := 0;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+    fbScopeServerControl			: FB_ScopeServerControl;
+    eReqState						: E_ScopeServerState := SCOPE_SERVER_IDLE;
+    bBusy							: BOOL := FALSE;
+    bDone							: BOOL := FALSE;
+    bError							: BOOL := FALSE;
+    nErrorId						: UDINT := 0;
+    fbTimer							: TON;
+    bTriggerTimer					: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+CASE nState OF
+0:
+    eReqState := SCOPE_SERVER_START;
+    nState := nState + 1;
+1:
+    IF fbScopeServerControl.bDone AND bExternalTriggerEvent
+    THEN
+        bTriggerTimer := TRUE;
+		nState := nState + 1;
+    END_IF
+2:
+    IF fbTimer.Q THEN
+        eReqState := SCOPE_SERVER_SAVE;
+        bTriggerTimer := FALSE;
+        nState := nState + 1;
+    END_IF
+3:
+    IF fbScopeServerControl.bDone THEN
+        eReqState := SCOPE_SERVER_DISCONNECT;
+    END_IF
+END_CASE
+
+fbTimer(IN:=bTriggerTimer, PT:=T#10S);
+*)
+fbScopeServerControl( sNetId:= '192.168.1.14.1.1',
+                      eReqState:= eReqState,
+                      //sConfigFile:= 'C:\twinCat\scope\test.sv2',
+                      //sSaveFile:= 'C:\twinCat\scope\test.svd',
+                      tTimeout:= t#5s,
+                      bBusy=>bBusy,
+                      bDone=>bDone,
+                      bError=>bError,
+                      nErrorId=>nErrorId);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

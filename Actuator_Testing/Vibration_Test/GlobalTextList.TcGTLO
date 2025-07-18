@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GlobalTextList Name="GlobalTextList" Id="{74590251-6eca-4ab6-8200-a47679ce227f}">
+    <XmlArchive>
+      <Data>
+        <o xml:space="preserve" t="GlobalTextListObject">
+          <l n="TextList" t="ArrayList" cet="TextListRow">
+            <o>
+              <v n="TextID">"838"</v>
+              <v n="TextDefault">"%5.3f"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"947"</v>
+              <v n="TextDefault">"%s"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"978"</v>
+              <v n="TextDefault">"Clear SA Faults"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"99"</v>
+              <v n="TextDefault">"Collect Data"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"747"</v>
+              <v n="TextDefault">"Desired SA Force"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"130"</v>
+              <v n="TextDefault">"Dongle Error"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"385"</v>
+              <v n="TextDefault">"Enable SA Card"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"104"</v>
+              <v n="TextDefault">"Err Num Samples"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"62"</v>
+              <v n="TextDefault">"Err Over Range"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"1"</v>
+              <v n="TextDefault">"Err Sample"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"685"</v>
+              <v n="TextDefault">"Err Under Range"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"897"</v>
+              <v n="TextDefault">"Err X Axis Num Samples"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"344"</v>
+              <v n="TextDefault">"Err X Axis Sample"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"614"</v>
+              <v n="TextDefault">"Err X Axis Samples"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"70"</v>
+              <v n="TextDefault">"Location ID Error"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"287"</v>
+              <v n="TextDefault">"Master Heartbeat Error"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"95"</v>
+              <v n="TextDefault">"Num. Samples"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"549"</v>
+              <v n="TextDefault">"PWM Output"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"197"</v>
+              <v n="TextDefault">"SA Force"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"14"</v>
+              <v n="TextDefault">"Signal Generator Amplitude"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"988"</v>
+              <v n="TextDefault">"Signal Generator Freq [Hz]"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"165"</v>
+              <v n="TextDefault">"Use Signal Generator"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"407"</v>
+              <v n="TextDefault">"X-Axis"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"762"</v>
+              <v n="TextDefault">"X-Axis (G's)"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"155"</v>
+              <v n="TextDefault">"X-Axis [g]"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"806"</v>
+              <v n="TextDefault">"X-Axis [m/s^2]"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"2"</v>
+              <v n="TextDefault">"Y-Axis"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"138"</v>
+              <v n="TextDefault">"Y-Axis  [g]"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"453"</v>
+              <v n="TextDefault">"Y-Axis (G's)"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"332"</v>
+              <v n="TextDefault">"Y-Axis [m/s^2]"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"773"</v>
+              <v n="TextDefault">"Z-Axis"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"910"</v>
+              <v n="TextDefault">"Z-Axis  [g]"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"318"</v>
+              <v n="TextDefault">"Z-Axis (G's)"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"312"</v>
+              <v n="TextDefault">"Z-Axis [m/s^2]"</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+          </l>
+          <l n="Languages" t="ArrayList" />
+          <v n="GuidInit">{a9cb9a64-51e8-4f8a-bcd8-2b3b96fde343}</v>
+          <v n="GuidReInit">{457c7ef5-d124-4dc9-b6d3-dc8bd586ebfc}</v>
+          <v n="GuidExitX">{9d65de1d-a976-4ae8-adfa-5a2dd78be791}</v>
+        </o>
+      </Data>
+      <TypeList>
+        <Type n="ArrayList">System.Collections.ArrayList</Type>
+        <Type n="GlobalTextListObject">{63784cbb-9ba0-45e6-9d69-babf3f040511}</Type>
+        <Type n="Guid">System.Guid</Type>
+        <Type n="String">System.String</Type>
+        <Type n="TextListRow">{53da1be7-ad25-47c3-b0e8-e26286dad2e0}</Type>
+      </TypeList>
+    </XmlArchive>
+  </GlobalTextList>
+</TcPlcObject>

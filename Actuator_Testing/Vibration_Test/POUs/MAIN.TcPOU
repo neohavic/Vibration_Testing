@@ -1,0 +1,202 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{b9575999-47f7-47f3-b79f-43bafa8bd900}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	bInit								: BOOL := TRUE;
+	
+	tSigGenTimer						: TON;
+	tTestTimer							: TON;
+	
+	fbPyListen							: FB_PyListener;
+	pyLoadBusy							: BOOL := FALSE;
+	pyReady								: BOOL := FALSE;
+	tglPyTest							: BOOL;
+	sPyTestMsg 							: STRING := 'Run Data Collection';
+	
+	fbSigGen							: FB_CTRL_SIGNAL_GENERATOR;
+	stCTRL_SIGNAL_GENERATOR_PARAMS		: ST_CTRL_SIGNAL_GENERATOR_PARAMS;
+	sigType								: E_CTRL_SIGNAL_TYPE;
+	eMode								: E_CTRL_MODE;
+	bUseSigGen							: BOOL := FALSE;
+	sigGenFreq							: REAL := 10;
+	sigGenTime							: REAL;
+	
+	fbUseScope							: FB_UseScope;
+	fbScopeServerControl				: FB_ScopeServerControl;
+    eReqState							: E_ScopeServerState := SCOPE_SERVER_IDLE;
+	bBusy								: BOOL := FALSE;
+    bDone								: BOOL := FALSE;
+    bError								: BOOL := FALSE;
+    nErrorId							: UDINT := 0;
+	
+	// Support actuator board control variables
+	saMsthb	AT %Q*						: UDINT := 0;
+	saEnable AT %Q*						: BOOL := FALSE;
+	saCloseLoop AT %Q*					: BOOL := TRUE;
+	saClearFault AT %Q*					: BOOL := FALSE;
+	saForceSetting AT %Q*				: REAL := 0;
+	
+	// Support actuator board monitor variables
+	saForceSpX AT %I*					: REAL := 0;
+	saPwm1 AT %I*						: INT;
+	saErrMasterHb AT %I*				: BOOL;
+	saErrDongle	AT %I*					: BOOL;
+	saErrLocId AT %I*					: BOOL;		
+
+	// Accelerometer measurement and status variables
+	xAxisReadingRaw AT %I* 				: DINT; // Raw measurement from acccelerometers are in nV
+	yAxisReadingRaw AT %I* 				: DINT;
+	zAxisReadingRaw AT %I*				: DINT;
+	
+	xAxisConverted_g					: REAL; // Converted accelerometer readings to g
+	yAxisConverted_g					: REAL;
+	zAxisConverted_g					: REAL;
+	
+	xAxisConverted_mps2					: REAL; // Converted accelerometer readings to m/s
+	yAxisConverted_mps2					: REAL;
+	zAxisConverted_mps2					: REAL;
+	
+	// Accelerometer status variables
+	xAxisNumSamples AT %I*				: USINT;
+	errXAxisSample AT %I*				: BOOL;
+	errXAxisOverRnge AT %I*				: BOOL;
+	errXAxisUndrRnge AT %I*				: BOOL;
+	
+	yAxisNumSamples AT %I*				: USINT;
+	errYAxisSample AT %I*				: BOOL;
+	errYAxisOverRnge AT %I*				: BOOL;
+	errYAxisUndrRnge AT %I*				: BOOL;
+	
+	ZAxisNumSamples AT %I*				: USINT;
+	errZAxisSample AT %I*				: BOOL;
+	errZAxisOverRnge AT %I*				: BOOL;
+	errZAxisUndrRnge AT %I*				: BOOL;
+	
+	test								: BOOL;
+
+END_VAR
+
+VAR CONSTANT	
+	Accelerometer_Coefficient_16 		: REAL := ((9.8 / 2) / 65536); 		//Max INT is 2^16, and the accelerometers can only do 0.5g fullscale
+	Accelerometer_Coefficient_24 		: REAL := ((9.8 / 2) / 16777213); 	//Max INT is 2^24, and the accelerometers can only do 0.5g fullscale
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[saMsthb := saMsthb + 1; // Support actuator heartbeat increment
+
+//fbUseScope(bExternalTriggerEvent := test);
+(*
+fbScopeServerControl( sNetId:= '',
+                      eReqState:= eReqState,
+                      //sConfigFile:= 'C:\twinCat\scope\test.sv2',
+                      //sSaveFile:= 'C:\twinCat\scope\test.svd',
+                      tTimeout:= t#5s,
+                      bBusy=>bBusy,
+                      bDone=>bDone,
+                      bError=>bError,
+                      nErrorId=>nErrorId);
+*)
+
+// Initialization routine, run once, set up signal generator setpoints
+IF bInit THEN
+	(* init the setpoint array *)
+	stCTRL_SIGNAL_GENERATOR_PARAMS.tCtrlCycleTime := T#1MS;
+	stCTRL_SIGNAL_GENERATOR_PARAMS.tTaskCycleTime := T#1MS;
+	stCTRL_SIGNAL_GENERATOR_PARAMS.eSignalType := 1; // Sine wave
+	stCTRL_SIGNAL_GENERATOR_PARAMS.tStart := T#0S;
+	stCTRL_SIGNAL_GENERATOR_PARAMS.tCylceDuration := T#1S; // Default period of 1s or 10Hz
+	stCTRL_SIGNAL_GENERATOR_PARAMS.fAmplitude := 80; // Amplitude of sinewave
+	stCTRL_SIGNAL_GENERATOR_PARAMS.fOffset := 0;
+
+	(* reset init flag *)
+	bInit := FALSE;
+END_IF
+
+IF tglPyTest = TRUE THEN
+
+	//fbPyListen(bExecute := TRUE); // Launch Python data collection code when button is pressed
+	//pyLoadBusy := TRUE; // Flag for if Python collection is busy collecting data, watched in Py script
+	pyReady := TRUE;
+	IF pyReady = TRUE THEN
+		
+		//fbUseScope(bExternalTriggerEvent := pyReady);
+		tSigGenTimer(IN := TRUE, PT := T#1mS);
+		tTestTimer(IN := TRUE, PT := T#120S);
+
+		IF tSigGenTimer.Q = TRUE THEN
+			bUseSigGen := TRUE;
+		END_IF
+	
+		IF tTestTimer.Q = TRUE THEN
+		(*	fbPyListen(
+				Initialized := FALSE,
+				bExecute := FALSE,
+				Init_State := 0
+				); *)
+			tTestTimer(IN := FALSE);
+			tSigGenTimer(IN := FALSE);
+			//PyLoadBusy := FALSE;
+			bUseSigGen := FALSE;
+			tglPyTest := FALSE;
+			saForceSetting := 0;
+			pyReady := FALSE;
+		END_IF
+	
+	END_IF
+END_IF
+
+IF saEnable = TRUE AND bUseSigGen = TRUE THEN
+	// Convert from Hz to time, scale to get appropriate ms
+	//stCTRL_SIGNAL_GENERATOR_PARAMS.tCylceDuration := REAL_TO_TIME((1 / sigGenFreq) * 10000);
+	sigGenTime := 1 / sigGenFreq;
+	stCTRL_SIGNAL_GENERATOR_PARAMS.tCylceDuration := REAL_TO_TIME(sigGenTime * 1000);
+	// Signal generator function to generate sine wave using defined properties, send to force setpoint
+	fbSigGen(
+		stParams := stCTRL_SIGNAL_GENERATOR_PARAMS,
+		eMode := eCTRL_MODE_ACTIVE, // Set the mode to ACTIVE --> normal operation
+		fOut => saForceSetting,
+	);	
+ELSIF saEnable = FALSE AND bUseSigGen = TRUE THEN
+	// Reset signal generator back to 0 for next card enable with signal generator
+	fbSigGen(
+		stParams := stCTRL_SIGNAL_GENERATOR_PARAMS,
+		eMode := eCTRL_MODE_RESET);
+END_IF
+
+saPwm1 := saPwm1 / 100; // Convert PWM signal to percent
+
+(*
+xAxisConvertedG := 0.1 * (DINT_TO_REAL(xAxisReadingRaw) * 10E-9); // (g/10V) * (nV * 10^-9 V/nV)
+yAxisConvertedG := 0.1 * (DINT_TO_REAL(yAxisReadingRaw) * 10E-9);
+zAxisConvertedG := 0.1 * (DINT_TO_REAL(zAxisReadingRaw) * 10E-9);
+*)
+(*
+// Convert accelerometer data to m/s^2
+xAxisConverted_mps2 := DINT_TO_REAL(xAxisReadingRaw) * Accelerometer_Coefficient_16; 
+yAxisConverted_mps2 := DINT_TO_REAL(yAxisReadingRaw) * Accelerometer_Coefficient_16;
+zAxisConverted_mps2 := DINT_TO_REAL(zAxisReadingRaw) * Accelerometer_Coefficient_16;
+
+// Convert accelerometer from m/s^2 to g
+xAxisConverted_g := DINT_TO_REAL(xAxisReadingRaw) * Accelerometer_Coefficient_16 * 0.10197162;
+yAxisConverted_g := DINT_TO_REAL(yAxisReadingRaw) * Accelerometer_Coefficient_16 * 0.10197162;
+zAxisConverted_g := DINT_TO_REAL(zAxisReadingRaw) * Accelerometer_Coefficient_16 * 0.10197162;
+*)
+
+xAxisConverted_g := (DINT_TO_REAL(xAxisReadingRaw) / 7812500) / 9.65;
+yAxisConverted_g := (DINT_TO_REAL(yAxisReadingRaw) / 7812500) / 9.8;
+zAxisConverted_g := (DINT_TO_REAL(zAxisReadingRaw) / 7812500) / 10; // Sensitivity inknown, cal card not with accelerometer
+
+xAxisConverted_mps2 := (DINT_TO_REAL(xAxisReadingRaw) / 7812500) / 1.02;
+yAxisConverted_mps2 := (DINT_TO_REAL(yAxisReadingRaw) / 7812500) / 1.02;
+zAxisConverted_mps2 := (DINT_TO_REAL(zAxisReadingRaw) / 7812500) / 1.02;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="3" Count="61" />
+      <LineId Id="75" Count="1" />
+      <LineId Id="78" Count="1" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="80" Count="38" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
